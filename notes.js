@@ -1,4 +1,5 @@
 const fs = require('fs');
+const chalk = require('chalk');
 
 const NOTES_FILE_NAME = 'notes.json';
 
@@ -34,6 +35,20 @@ const loadNotes = () => {
     }
 };
 
+const removeNote = (title) => {
+    const notes = loadNotes();
+    const filteredNotes = notes.filter(note => note.title !== title);
+    const isDeleted = notes.length !== filteredNotes.length;
+ 
+    if (isDeleted) {
+        saveNotes(filteredNotes);
+        console.log(chalk.bgGreen.bold(`Note ${title} has been deleted!`));
+    } else {
+        console.log(chalk.bgRed.bold('Note not found!'));
+    }
+};
+
 module.exports = {
-    addNote
+    addNote,
+    removeNote
 };
