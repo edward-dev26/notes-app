@@ -1,24 +1,24 @@
 const fs = require('fs');
+const messages = require('./messages.js');
 const chalk = require('chalk');
 
 const NOTES_FILE_NAME = 'notes.json';
 
 const addNote = (title, body) => {
     const notes = loadNotes();
-    const duplicateNotes = notes.filter(note => note.title === title);
+    const duplicateNote = notes.finc(note => note.title === title);
 
-    if (!duplicateNotes.lenght) {
+    if (!duplicateNote) {
         notes.push({
             title,
             body
         });
 
-        console.log('Note has been added!');
+        saveNotes(notes);
+        messages.success('Note has been added!');
     } else {
-        console.log('Note title already taken!');
+        messages.error('Note title already taken!');
     }
-
-    saveNotes(notes);
 };
 
 const saveNotes = (notes) => {
@@ -39,16 +39,40 @@ const removeNote = (title) => {
     const notes = loadNotes();
     const filteredNotes = notes.filter(note => note.title !== title);
     const isDeleted = notes.length !== filteredNotes.length;
- 
+
     if (isDeleted) {
         saveNotes(filteredNotes);
-        console.log(chalk.bgGreen.bold(`Note ${title} has been deleted!`));
+        messages.success(`Note ${title} has been deleted!`);
     } else {
-        console.log(chalk.bgRed.bold('Note not found!'));
+        messages.error('Note not found!');
+    }
+};
+
+const listNotes = () => {
+    const notes = loadNotes();
+
+    console.log(chalk.keyword('orange').bold('Your notes: '));
+
+    notes.forEach((note, index) => {
+        console.log(chalk.keyword('orange')(`${index + 1}) ${note.title}`));
+    });
+};
+
+const readNote = (title) => {
+    const notes = loadNotes();
+    const note = notes.find(note => note.title === title);
+
+    if (note) {
+        console.log(chalk.bold.inverse(note.title));
+        console.log(note.body);
+    } else {
+        messages.error('Note not found');
     }
 };
 
 module.exports = {
     addNote,
-    removeNote
+    removeNote,
+    listNotes,
+    readNote,
 };
